@@ -275,10 +275,11 @@ def process_all(df, start_num, config, upload_folder):
         }
 
         # Примерен имейл и Viber съобщение
+        total_with_vat = sum(float(i['total']) for i in items) * 1.20
         email_text = config['email']['template'].format(
             invoice_no=invoice_data['invoice_no'],
             client=invoice_data['client_name'],
-            total=sum(float(i['total']) for i in items),
+            total=total_with_vat,
             serials=', '.join(serials),
             iban=invoice_data['iban'],
             firm=invoice_data['firm_name'],
@@ -287,7 +288,7 @@ def process_all(df, start_num, config, upload_folder):
         viber_text = config['viber']['template'].format(
             invoice_no=invoice_data['invoice_no'],
             client=invoice_data['client_name'],
-            total=sum(float(i['total']) for i in items),
+            total=total_with_vat,
             serials=', '.join(serials)
         )
 
