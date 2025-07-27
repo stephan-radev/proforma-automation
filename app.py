@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, send_file, redirect, url_for,
 from werkzeug.utils import secure_filename
 from jinja2 import Template
 from datetime import datetime
-from utils import generate_invoice_pdf, pdf_to_png, generate_transfer_log, add_invoice_info_to_table
+from utils import generate_invoice_pdf, pdf_to_png, generate_transfer_log, add_invoice_info_to_table, send_email_smtp
 
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'xls', 'xlsx', 'csv'}
@@ -254,6 +254,7 @@ def process_all(df, start_num, config, upload_folder):
         all_results.append({
             "invoice_no": invoice_data['invoice_no'],
             "client": invoice_data['client_name'],
+            "client_email": invoice_data['client_email'],
             "pdf": pdf_name,
             "png": png_name,
             "email_text": email_text,
@@ -298,10 +299,8 @@ def send_emails():
     data = session.get('log_data', {})
     result = data.get('result', [])
     doc_links = data.get('doc_links', {})
-    # Прочети smtp и т.н. от config
-    smtp_config = config['smtp']
     for r in result:
-        email = find_email_for_client(r["client"])  # Функция, която по името връща email (или просто r["client_email"] ако го имаш)
+        email = r.get("client_email")
         if not email:
             continue  # skip ако няма имейл
         attachment_path = doc_links[r["invoice_no"]]["pdf"]
