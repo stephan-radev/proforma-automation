@@ -320,7 +320,9 @@ def process_all(df, start_num, config, upload_folder):
                 "price": item['price'],
                 "code": item['code'],
                 "producer": item['producer'],
-                "date": today
+                "date": today,
+                "object_name": config.get('object', {}).get('name', 'Основен склад'),
+                "object_id": str(config.get('object', {}).get('id', ''))
             }
             transfer_ops.append(op)
 
