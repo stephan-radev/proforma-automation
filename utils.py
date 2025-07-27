@@ -5,6 +5,9 @@ from pdf2image import convert_from_path
 import xml.etree.ElementTree as ET
 import pandas as pd
 from datetime import datetime
+import smtplib
+import ssl
+from email.message import EmailMessage
 
 # Път до шаблоните
 TEMPLATES_DIR = "templates"
@@ -62,5 +65,25 @@ def add_invoice_info_to_table(df, invoice_no_map):
     df['Проформа №'] = df.index.map(lambda idx: invoice_no_map.get(idx, {}).get("Проформа №", ""))
     df['Дата на проформа'] = df.index.map(lambda idx: invoice_no_map.get(idx, {}).get("Дата на проформа", ""))
     return df
+
+def send_email_smtp(to_addr, subject, body, attachment_path, config):
+    smtp_host = config['smtp']['host']
+    smtp_port = config['smtp']['port']
+    smtp_user = config['smtp']['user']
+    smtp_pass = config['smtp']['password']
+
+    msg = EmailMessage()
+    msg['From'] = smtp_user
+    msg['To'] = to_addr
+    msg['Subject'] = subject
+    msg.set_content(body)
+
+    with open(attachment_path, 'rb') as f:
+        msg.add_attachment(f.read(), maintype='application', subtype='pdf', filename=attachment_path.split('/')[-1])
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
 
 
