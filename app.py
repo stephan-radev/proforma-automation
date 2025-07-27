@@ -345,7 +345,7 @@ def process_all(df, start_num, config, upload_folder):
 
     # Генериране на transfer.log
     transfer_log_path = os.path.join(upload_folder, 'transfer.log')
-    generate_transfer_log(transfer_ops, transfer_log_path)
+    generate_transfer_log(transfer_ops, transfer_log_path, config)
 
     return all_results, updated_df, transfer_log_path, doc_links
     
