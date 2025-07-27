@@ -41,12 +41,13 @@ def generate_transfer_log(ops_list, output_path):
         ET.SubElement(oper, 'operations_Acct').text = op['invoice_no']
         ET.SubElement(oper, 'operations_GoodID').text = op['code']
         ET.SubElement(oper, 'operations_PartnerID').text = ""   # ако има
-        ET.SubElement(oper, 'operations_ObjectID').text = ""
+        ET.SubElement(oper, 'operations_ObjectID').text = op.get('object_id', '')
         ET.SubElement(oper, 'operations_OperatorID').text = ""
         ET.SubElement(oper, 'operations_Qtty').text = str(op['qty'])
         ET.SubElement(oper, 'operations_PriceOut').text = op['price']
         ET.SubElement(oper, 'operations_Date').text = datetime.now().isoformat()
         ET.SubElement(oper, 'goods_Name').text = op['desc']
+        ET.SubElement(oper, 'objects_Name').text = op.get('object_name', '')
         # Допиши и други полета ако трябва
     # Кратко описание
     desc = ET.SubElement(root, 'Description')
