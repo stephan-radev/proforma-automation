@@ -8,6 +8,10 @@ invoice:
   firm_address: "Град, адрес..."
   firm_mol: "Вашето име"
 
+object:
+  id: 1
+  name: "Основен склад"
+
 instructions:
   default: "Примерна инструкция за плащане..."
   Daisy: "Указание за устройства Daisy..."
