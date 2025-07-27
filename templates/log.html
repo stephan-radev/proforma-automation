@@ -28,6 +28,11 @@
         }
     </script>
 </head>
+<form method="POST" action="{{ url_for('send_emails') }}">
+    <button type="submit" style="background:#1e6c2b; color:white; font-size:17px; padding:9px 22px; border-radius:7px; border:none; cursor:pointer;">
+        Изпрати всички имейли с проформа
+    </button>
+</form>
 <body>
     <div class="container">
         <h2>Генерирани проформа фактури и лог</h2>

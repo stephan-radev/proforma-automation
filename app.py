@@ -24,9 +24,37 @@ with open('config.yaml', encoding="utf-8") as f:
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+SERIAL_PREFIX_PRODUCER = {
+    "DY": "Daisy",
+    "DT": "Datecs",
+    "DA": "Datecs",
+    "ZK": "Tremol",
+    "ZI": "ZIT"
+    # Добави и други, ако имаш
+}
+DEFAULT_SERVICE_DESCR = {
+    "Daisy": "Актуализация на ФУ на Дейзи",
+    "Datecs": "Актуализация на ФУ на Датекс",
+    "Tremol": "Актуализация на ФУ на Тремол",
+    "ZIT": "Актуализация на ФУ на ЗИТ"
+}
+def get_producer(serial, row_prod):
+    if pd.notna(row_prod) and str(row_prod).strip():
+        return str(row_prod).strip()
+    for prefix, prod in SERIAL_PREFIX_PRODUCER.items():
+        if str(serial).startswith(prefix):
+            return prod
+    return "Неизвестен"
+def get_service_descr(prod, row_descr):
+    if pd.notna(row_descr) and str(row_descr).strip():
+        return str(row_descr).strip()
+    return DEFAULT_SERVICE_DESCR.get(prod, "Актуализация на ФУ")
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        # Изчисти старата сесия преди обработка
+        session.pop('log_data', None)
         # Качване на таблица
         file = request.files['file']
         if not file or not allowed_file(file.filename):
@@ -63,7 +91,13 @@ def index():
             "updated_table": updated_path
         }
 
-        return redirect(url_for('log'))
+        return render_template(
+            'log.html',
+            result=result,
+            transfer_log_path=transfer_log_path,
+            doc_links=doc_links,
+            updated_table=updated_path
+        )
 
     return render_template('index.html', default_num=config['invoice']['default_start_number'])
 
@@ -87,32 +121,72 @@ def process_all(df, start_num, config, upload_folder):
     """
     Главна функция за обработка на всички клиенти и генериране на документи.
     """
+    # Чисти и нормализира данните
+    df['Брой'] = pd.to_numeric(df['Брой'], errors='coerce').fillna(1)
+    df['Цена/бр.'] = pd.to_numeric(df['Цена/бр.'], errors='coerce').fillna(0)
+    df['Производител'] = df['Производител'].fillna('')
+    df['Описание услуга'] = df['Описание услуга'].fillna('')
+    df['Код услуга'] = df['Код услуга'].fillna('')
+    df['Сер. №'] = df['Сер. №'].astype(str).str.strip()
+
+    SERIAL_PREFIX_PRODUCER = {
+        "DY": "Daisy",
+        "DT": "Datecs",
+        "ZK": "Tremol",
+    }
+    DEFAULT_SERVICE_DESCR = {
+        "Daisy": "Актуализация на ФУ на Дейзи",
+        "Datecs": "Актуализация на ФУ на Датекс",
+        "Tremol": "Актуализация на ФУ на Тремол"
+    }
+
+    # Определя производител, ако няма попълнен
+    def get_producer(serial, row_prod):
+        if str(row_prod).strip():
+            return str(row_prod).strip()
+        for prefix, prod in SERIAL_PREFIX_PRODUCER.items():
+            if serial.startswith(prefix):
+                return prod
+        return "Неизвестен"
+
+    def get_service_descr(prod, row_descr):
+        if str(row_descr).strip():
+            return str(row_descr).strip()
+        return DEFAULT_SERVICE_DESCR.get(prod, "Актуализация на ФУ")
+
+    df['Реален производител'] = [
+        get_producer(row['Сер. №'], row['Производител']) for idx, row in df.iterrows()
+    ]
+    df['Реално описание'] = [
+        get_service_descr(prod, row['Описание услуга']) for prod, (_, row) in zip(df['Реален производител'], df.iterrows())
+    ]
+
     today = datetime.now().strftime("%d.%m.%Y")
     invoice_no = start_num
     all_results = []
     doc_links = {}
     invoice_no_map = {}
 
-    # Групиране по клиент (и ЕИК ако има)
+    # Групирай по клиент и ЕИК (ако има)
     grouped = df.groupby(['Клиент', 'ЕИК'] if 'ЕИК' in df.columns else ['Клиент'])
     transfer_ops = []
 
     for group_key, group_df in grouped:
-        # Групиране по производител (или както искаш)
-        by_prod = group_df.groupby('Производител')
+        by_prod = group_df.groupby('Реален производител')
         items = []
         serials = []
         for prod, prod_df in by_prod:
-            count = prod_df['Брой'].sum()
-            price = prod_df['Цена/бр.'].iloc[0]
-            service_code = str(prod_df['Код услуга'].iloc[0])
-            desc = prod_df['Описание услуга'].iloc[0]
+            count = prod_df['Брой'].apply(pd.to_numeric, errors='coerce').sum()
+            price_col = prod_df['Цена/бр.'].apply(pd.to_numeric, errors='coerce').dropna()
+            price = float(price_col.iloc[0]) if not price_col.empty else 0.0
+            desc = DEFAULT_SERVICE_DESCR.get(prod, f"Актуализация на ФУ на {prod}")
+            # Не взимай desc от prod_df['Описание услуга']
             items.append({
                 "desc": desc,
                 "qty": int(count),
                 "price": f"{price:.2f}",
                 "total": f"{count * price:.2f}",
-                "code": service_code,
+                "code": "",
                 "producer": prod
             })
             serials += [str(s) for s in prod_df['Сер. №']]
@@ -213,6 +287,29 @@ def process_all(df, start_num, config, upload_folder):
     generate_transfer_log(transfer_ops, transfer_log_path)
 
     return all_results, updated_df, transfer_log_path, doc_links
+    
+@app.route('/send-emails', methods=['POST'])
+def send_emails():
+    data = session.get('log_data', {})
+    result = data.get('result', [])
+    doc_links = data.get('doc_links', {})
+    # Прочети smtp и т.н. от config
+    smtp_config = config['smtp']
+    for r in result:
+        email = find_email_for_client(r["client"])  # Функция, която по името връща email (или просто r["client_email"] ако го имаш)
+        if not email:
+            continue  # skip ако няма имейл
+        attachment_path = doc_links[r["invoice_no"]]["pdf"]
+        send_email_smtp(
+            to_addr=email,
+            subject=config['email']['subject_template'].format(invoice_no=r["invoice_no"], firm_name=config['invoice']['firm_name']),
+            body=r["email_text"] + "\n\n--\nАко сте получили това писмо по погрешка или вече сте реагирали, извинете ни — задължени сме по законодателство да информираме всички клиенти.",
+            attachment_path=attachment_path,
+            config=config
+        )
+    flash("Изпратени са всички проформа имейли!")
+
+    return redirect(url_for('log'))
 
 if __name__ == "__main__":
     app.run(debug=True)
