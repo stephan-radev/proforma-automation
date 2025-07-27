@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Генерирани проформа фактури – лог</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f6f6fa; margin: 0; padding: 0; }
+        .container { max-width: 960px; margin: 36px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #aaa; padding: 24px; }
+        h2 { text-align: center; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 36px; }
+        th, td { border: 1px solid #bbb; padding: 8px; }
+        th { background: #f0f0f0; }
+        .copy-btn { padding: 3px 12px; background: #ececec; color: #1a1a1a; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; margin-left: 10px; font-size: 13px;}
+        .section-title { font-weight: bold; font-size: 16px; margin-top: 18px; margin-bottom: 6px; }
+        .doc-links { margin-bottom: 14px; }
+        textarea { width: 100%; height: 70px; margin-bottom: 6px; font-family: monospace; font-size: 13px; }
+        .bottom-links { margin-top: 28px; text-align: center; }
+        .file-link { display: inline-block; margin: 0 12px 12px 0; padding: 8px 20px; background: #16a34a; color: #fff; text-decoration: none; border-radius: 7px; font-weight: bold; }
+        .file-link:hover { background: #128239; }
+        .info { font-size: 13px; color: #555; margin-bottom: 12px; }
+    </style>
+    <script>
+        function copyText(id) {
+            var copyText = document.getElementById(id);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Генерирани проформа фактури и лог</h2>
+        <div class="bottom-links">
+            {% if transfer_log_path %}
+                <a class="file-link" href="{{ url_for('download', filename=transfer_log_path) }}">Свали transfer.log</a>
+            {% endif %}
+            {% if updated_table %}
+                <a class="file-link" href="{{ url_for('download', filename=updated_table) }}">Свали обновената таблица</a>
+            {% endif %}
+        </div>
+        <div class="info">
+            <b>Линкове към всички документи и текстове за имейли/Viber. Използвай бутоните „Копирай“, за да копираш съответния текст.</b>
+        </div>
+        <table>
+            <tr>
+                <th>Проформа №</th>
+                <th>Клиент</th>
+                <th>PDF</th>
+                <th>PNG</th>
+                <th>Имейл текст</th>
+                <th>Viber текст</th>
+            </tr>
+            {% for r in result %}
+            <tr>
+                <td>{{ r.invoice_no }}</td>
+                <td>{{ r.client }}</td>
+                <td>
+                    <a href="{{ url_for('download', filename=doc_links[r.invoice_no]['pdf']) }}" target="_blank">PDF</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('download', filename=doc_links[r.invoice_no]['png']) }}" target="_blank">PNG</a>
+                </td>
+                <td>
+                    <textarea id="email{{ loop.index }}">{{ r.email_text }}</textarea>
+                    <button class="copy-btn" onclick="copyText('email{{ loop.index }}')">Копирай</button>
+                </td>
+                <td>
+                    <textarea id="viber{{ loop.index }}">{{ r.viber_text }}</textarea>
+                    <button class="copy-btn" onclick="copyText('viber{{ loop.index }}')">Копирай</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="bottom-links">
+            <a class="file-link" href="{{ url_for('index') }}">⬅︎ Ново качване / нова генерация</a>
+        </div>
+    </div>
+</body>
+</html>
+

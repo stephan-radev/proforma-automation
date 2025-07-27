@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Проформа фактура № {{ invoice_no }}</title>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 13px; }
+        .header { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+        .info-table, .items-table { width: 100%; border-collapse: collapse; }
+        .info-table td { padding: 2px 6px; }
+        .items-table th, .items-table td { border: 1px solid #444; padding: 6px; text-align: left; }
+        .items-table th { background: #eee; }
+        .section-title { font-weight: bold; margin-top: 12px; }
+        .totals { font-weight: bold; text-align: right; }
+        .footer { margin-top: 18px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">Проформа фактура № {{ invoice_no }}<br>Дата: {{ invoice_date }}</div>
+    <table class="info-table">
+        <tr>
+            <td>
+                <b>Получател:</b> {{ client_name }}<br>
+                {% if client_eik %}<b>ЕИК:</b> {{ client_eik }}<br>{% endif %}
+                {% if client_city %}<b>Град:</b> {{ client_city }}<br>{% endif %}
+                {% if client_address %}<b>Адрес:</b> {{ client_address }}<br>{% endif %}
+                {% if client_mol %}<b>МОЛ:</b> {{ client_mol }}<br>{% endif %}
+                {% if client_phone %}<b>Телефон:</b> {{ client_phone }}<br>{% endif %}
+                {% if client_email %}<b>Email:</b> {{ client_email }}<br>{% endif %}
+            </td>
+            <td>
+                <b>Доставчик:</b> {{ firm_name }}<br>
+                <b>ЕИК:</b> {{ firm_eik }}<br>
+                <b>Град:</b> {{ firm_address }}<br>
+                <b>МОЛ:</b> {{ firm_mol }}<br>
+                <b>IBAN:</b> {{ iban }}<br>
+                <b>BIC:</b> {{ bic }}<br>
+                <b>Банка:</b> {{ bank }}
+            </td>
+        </tr>
+    </table>
+    <div class="section-title">Устройства (серийни номера):</div>
+    <div>{{ serials|join(', ') }}</div>
+    <div class="section-title">Артикули:</div>
+    <table class="items-table">
+        <tr>
+            <th>Описание</th>
+            <th>Брой</th>
+            <th>Ед. цена (лв.)</th>
+            <th>Стойност (лв.)</th>
+        </tr>
+        {% set sum_base = 0 %}
+        {% for item in items %}
+        {% set sum_base = sum_base + item.qty|float * item.price|float %}
+        <tr>
+            <td>{{ item.desc }}</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3" class="totals">Данъчна основа 20%:</td>
+            <td class="totals">{{ '%.2f' % sum_base }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="totals">20% ДДС:</td>
+            <td class="totals">{{ '%.2f' % (sum_base * 0.20) }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="totals">Общо:</td>
+            <td class="totals">{{ '%.2f' % (sum_base * 1.20) }}</td>
+        </tr>
+    </table>
+    <div class="footer">
+        <b>Инструкции:</b> {{ instructions }}<br>
+        <br>
+        Плащане по сметка: {{ iban }} | {{ bank }}<br>
+        Основание: Проформа № {{ invoice_no }}<br>
+        <br>
+        Програмен продукт Microinvest Склад Pro
+    </div>
+</body>
+</html>
+
