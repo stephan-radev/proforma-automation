@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Автоматично генериране на проформа фактури</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f6f6fa; margin: 0; padding: 0; }
+        .container { width: 420px; margin: 60px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #aaa; padding: 24px; }
+        h2 { text-align: center; margin-bottom: 24px; }
+        label { display: block; margin-bottom: 8px; margin-top: 16px; font-weight: bold; }
+        input[type="number"], input[type="file"] {
+            width: 100%; padding: 8px; margin-bottom: 16px;
+            border: 1px solid #ccc; border-radius: 6px;
+        }
+        button { width: 100%; padding: 12px; background: #16a34a; color: #fff; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #0e7d33; }
+        .info { font-size: 13px; margin-bottom: 10px; color: #444; }
+        .error { color: #d32f2f; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Генериране на проформа фактури</h2>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="error">
+              {% for message in messages %}
+                {{ message }}<br>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <form method="post" enctype="multipart/form-data">
+            <label>Таблица с устройства (Excel/CSV):</label>
+            <input type="file" name="file" accept=".xls,.xlsx,.csv" required>
+            <div class="info">
+                <b>Колони:</b> Сер. №, Модел, Производител, Дата, Клиент, ЕИК, Град, Адрес, МОЛ, Телефон, Имейл, Брой, Цена/бр., Код услуга, Описание услуга<br>
+                <span style="color:#888;">(Може да има и други, важно е тези да ги има!)</span>
+            </div>
+            <label>Начален номер на проформа:</label>
+            <input type="number" name="start_num" value="{{ default_num }}" min="1" required>
+            <button type="submit">Генерирай документите</button>
+        </form>
+    </div>
+</body>
+</html>
+
