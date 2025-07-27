@@ -10,6 +10,7 @@
         .info-table td { padding: 2px 6px; }
         .items-table th, .items-table td { border: 1px solid #444; padding: 6px; text-align: left; }
         .items-table th { background: #eee; }
+        .right { text-align: right; }
         .section-title { font-weight: bold; margin-top: 12px; }
         .totals { font-weight: bold; text-align: right; }
         .footer { margin-top: 18px; font-size: 12px; }
@@ -45,16 +46,16 @@
     <table class="items-table">
         <tr>
             <th>Описание</th>
-            <th>Брой</th>
-            <th>Ед. цена (лв.)</th>
-            <th>Стойност (лв.)</th>
+            <th class="right">Брой</th>
+            <th class="right">Ед. цена (лв.)</th>
+            <th class="right">Стойност (лв.)</th>
         </tr>
         {% for item in items %}
         <tr>
             <td>{{ item.desc }}</td>
-            <td>{{ item.qty }}</td>
-            <td>{{ item.price }}</td>
-            <td>{{ item.total }}</td>
+            <td class="right">{{ item.qty }}</td>
+            <td class="right">{{ item.price }}</td>
+            <td class="right">{{ item.total }}</td>
         </tr>
         {% endfor %}
         <tr>
