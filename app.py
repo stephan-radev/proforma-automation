@@ -191,6 +191,8 @@ def process_all(df, start_num, config, upload_folder):
             })
             serials += [str(s) for s in prod_df['Сер. №']]
 
+        sum_base = sum(float(i['total']) for i in items)
+
         invoice_data = {
             "invoice_no": f"{invoice_no:09d}",
             "invoice_date": today,
@@ -211,6 +213,9 @@ def process_all(df, start_num, config, upload_folder):
             "firm_eik": config['invoice']['firm_eik'],
             "firm_address": config['invoice']['firm_address'],
             "firm_mol": config['invoice']['firm_mol'],
+            "sum_base": f"{sum_base:.2f}",
+            "vat_amount": f"{sum_base * 0.20:.2f}",
+            "total_amount": f"{sum_base * 1.20:.2f}",
         }
 
         # Генериране на PDF проформа
