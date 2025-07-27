@@ -1,4 +1,6 @@
 import os
+import json
+import uuid
 import pandas as pd
 import yaml
 import tempfile
@@ -9,6 +11,7 @@ from datetime import datetime
 from utils import generate_invoice_pdf, pdf_to_png, generate_transfer_log, add_invoice_info_to_table, send_email_smtp
 
 UPLOAD_FOLDER = 'static'
+SESSIONS_FOLDER = os.path.join(UPLOAD_FOLDER, 'sessions')
 ALLOWED_EXTENSIONS = {'xls', 'xlsx', 'csv'}
 
 app = Flask(__name__)
@@ -16,6 +19,7 @@ app.secret_key = "supersecret"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(SESSIONS_FOLDER, exist_ok=True)
 
 # ЗАРЕЖДАНЕ НА КОНФИГ
 with open('config.yaml', encoding="utf-8") as f:
@@ -55,6 +59,9 @@ def index():
     if request.method == 'POST':
         # Изчисти старата сесия преди обработка
         session.pop('log_data', None)
+        session_id = uuid.uuid4().hex
+        session_folder = os.path.join(SESSIONS_FOLDER, session_id)
+        os.makedirs(session_folder, exist_ok=True)
         # Качване на таблица
         file = request.files['file']
         if not file or not allowed_file(file.filename):
@@ -64,7 +71,7 @@ def index():
         start_num = int(request.form['start_num'])
 
         filename = secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        filepath = os.path.join(session_folder, filename)
         file.save(filepath)
 
         # Зареждане на таблицата
@@ -76,27 +83,35 @@ def index():
 
         # Основна обработка – групиране, генериране на документи и логове
         result, updated_df, transfer_log_path, doc_links = process_all(
-            df, start_num, config, app.config['UPLOAD_FOLDER']
+            df, start_num, config, session_folder
         )
 
         # Съхраняване на допълнената таблица
-        updated_path = os.path.join(app.config['UPLOAD_FOLDER'], 'updated_' + filename)
+        updated_path = os.path.join(session_folder, 'updated_' + filename)
         updated_df.to_excel(updated_path, index=False)
 
-        # Запазване на инфото за показване в log.html
-        session['log_data'] = {
+        session_data = {
             "result": result,
             "transfer_log_path": transfer_log_path,
             "doc_links": doc_links,
-            "updated_table": updated_path
+            "updated_table": updated_path,
+            "send_log": [],
+            "session_id": session_id,
         }
+        session['log_data'] = session_data
+
+        with open(os.path.join(session_folder, 'session.json'), 'w', encoding='utf-8') as f:
+            json.dump(session_data, f, ensure_ascii=False, indent=2)
 
         return render_template(
             'log.html',
             result=result,
             transfer_log_path=transfer_log_path,
             doc_links=doc_links,
-            updated_table=updated_path
+            updated_table=updated_path,
+            send_log=[],
+            session_id=session_id,
+            session_link=url_for('view_session', session_id=session_id, _external=True)
         )
 
     return render_template('index.html', default_num=config['invoice']['default_start_number'])
@@ -104,12 +119,37 @@ def index():
 @app.route('/log')
 def log():
     data = session.get('log_data', {})
+    session_id = data.get('session_id')
     return render_template(
         'log.html',
         result=data.get('result', []),
         transfer_log_path=data.get('transfer_log_path'),
         doc_links=data.get('doc_links', {}),
-        updated_table=data.get('updated_table')
+        updated_table=data.get('updated_table'),
+        send_log=data.get('send_log', []),
+        session_id=session_id,
+        session_link=url_for('view_session', session_id=session_id, _external=True) if session_id else None
+    )
+
+@app.route('/session/<session_id>')
+def view_session(session_id):
+    json_path = os.path.join(SESSIONS_FOLDER, session_id, 'session.json')
+    if not os.path.exists(json_path):
+        flash('Невалидна сесия!')
+        return redirect(url_for('index'))
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    data['session_id'] = session_id
+    session['log_data'] = data
+    return render_template(
+        'log.html',
+        result=data.get('result', []),
+        transfer_log_path=data.get('transfer_log_path'),
+        doc_links=data.get('doc_links', {}),
+        updated_table=data.get('updated_table'),
+        send_log=data.get('send_log', []),
+        session_id=session_id,
+        session_link=url_for('view_session', session_id=session_id, _external=True)
     )
 
 @app.route('/download/<path:filename>')
@@ -296,21 +336,46 @@ def process_all(df, start_num, config, upload_folder):
     
 @app.route('/send-emails', methods=['POST'])
 def send_emails():
+    form_session_id = request.form.get('session_id')
     data = session.get('log_data', {})
+    if form_session_id and data.get('session_id') != form_session_id:
+        # ако е подадена друга сесия - зареди от файл
+        json_path = os.path.join(SESSIONS_FOLDER, form_session_id, 'session.json')
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            session['log_data'] = data
+            session['log_data']['session_id'] = form_session_id
     result = data.get('result', [])
     doc_links = data.get('doc_links', {})
+    send_log = data.get('send_log', [])
+    session_id = data.get('session_id')
+    session_folder = os.path.join(SESSIONS_FOLDER, session_id) if session_id else None
     for r in result:
         email = r.get("client_email")
+        log_entry = {"invoice_no": r["invoice_no"], "client": r["client"], "email": email}
         if not email:
-            continue  # skip ако няма имейл
+            log_entry["status"] = "няма имейл"
+            send_log.append(log_entry)
+            continue
         attachment_path = doc_links[r["invoice_no"]]["pdf"]
-        send_email_smtp(
-            to_addr=email,
-            subject=config['email']['subject_template'].format(invoice_no=r["invoice_no"], firm_name=config['invoice']['firm_name']),
-            body=r["email_text"] + "\n\n--\nАко сте получили това писмо по погрешка или вече сте реагирали, извинете ни — задължени сме по законодателство да информираме всички клиенти.",
-            attachment_path=attachment_path,
-            config=config
-        )
+        try:
+            send_email_smtp(
+                to_addr=email,
+                subject=config['email']['subject_template'].format(invoice_no=r["invoice_no"], firm_name=config['invoice']['firm_name']),
+                body=r["email_text"] + "\n\n--\nАко сте получили това писмо по погрешка или вече сте реагирали, извинете ни — задължени сме по законодателство да информираме всички клиенти.",
+                attachment_path=attachment_path,
+                config=config
+            )
+            log_entry["status"] = "изпратен"
+        except Exception as e:
+            log_entry["status"] = f"грешка: {e}"
+        send_log.append(log_entry)
+
+    session['log_data']['send_log'] = send_log
+    if session_folder:
+        with open(os.path.join(session_folder, 'session.json'), 'w', encoding='utf-8') as f:
+            json.dump(session['log_data'], f, ensure_ascii=False, indent=2)
     flash("Изпратени са всички проформа имейли!")
 
     return redirect(url_for('log'))
