@@ -29,6 +29,7 @@
     </script>
 </head>
 <form method="POST" action="{{ url_for('send_emails') }}">
+    <input type="hidden" name="session_id" value="{{ session_id }}">
     <button type="submit" style="background:#1e6c2b; color:white; font-size:17px; padding:9px 22px; border-radius:7px; border:none; cursor:pointer;">
         Изпрати всички имейли с проформа
     </button>
@@ -47,6 +48,11 @@
         <div class="info">
             <b>Линкове към всички документи и текстове за имейли/Viber. Използвай бутоните „Копирай“, за да копираш съответния текст.</b>
         </div>
+        {% if session_link %}
+        <div class="info">
+            Линк към тази сесия: <a href="{{ session_link }}" target="_blank">{{ session_link }}</a>
+        </div>
+        {% endif %}
         <table>
             <tr>
                 <th>Проформа №</th>
@@ -77,6 +83,25 @@
             </tr>
             {% endfor %}
         </table>
+        {% if send_log %}
+        <div class="section-title">Дневник на изпращанията</div>
+        <table>
+            <tr>
+                <th>Проформа №</th>
+                <th>Клиент</th>
+                <th>Email</th>
+                <th>Статус</th>
+            </tr>
+            {% for s in send_log %}
+            <tr>
+                <td>{{ s.invoice_no }}</td>
+                <td>{{ s.client }}</td>
+                <td>{{ s.email }}</td>
+                <td>{{ s.status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
         <div class="bottom-links">
             <a class="file-link" href="{{ url_for('index') }}">⬅︎ Ново качване / нова генерация</a>
         </div>
