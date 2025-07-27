@@ -49,9 +49,7 @@
             <th>Ед. цена (лв.)</th>
             <th>Стойност (лв.)</th>
         </tr>
-        {% set sum_base = 0 %}
         {% for item in items %}
-        {% set sum_base = sum_base + item.qty|float * item.price|float %}
         <tr>
             <td>{{ item.desc }}</td>
             <td>{{ item.qty }}</td>
@@ -61,15 +59,15 @@
         {% endfor %}
         <tr>
             <td colspan="3" class="totals">Данъчна основа 20%:</td>
-            <td class="totals">{{ '%.2f' % sum_base }}</td>
+            <td class="totals">{{ sum_base }}</td>
         </tr>
         <tr>
             <td colspan="3" class="totals">20% ДДС:</td>
-            <td class="totals">{{ '%.2f' % (sum_base * 0.20) }}</td>
+            <td class="totals">{{ vat_amount }}</td>
         </tr>
         <tr>
             <td colspan="3" class="totals">Общо:</td>
-            <td class="totals">{{ '%.2f' % (sum_base * 1.20) }}</td>
+            <td class="totals">{{ total_amount }}</td>
         </tr>
     </table>
     <div class="footer">
