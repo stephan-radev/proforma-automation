@@ -57,3 +57,12 @@ smtp:
   user: "user@example.com"
   password: "secret"
 
+microinvest_user:
+  id: 2
+  code: 1
+  name: "Стефан"
+  full_name: "Стефан Радев"
+  password: "8KzKNOSLDSE="
+  group_id: 2
+  user_level: 3
+
