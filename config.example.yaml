@@ -43,3 +43,10 @@ viber:
     Сума: {total:.2f} лв.
     Основание: Проформа № {invoice_no}
 
+# Настройки за SMTP сървъра, използван при изпращане на имейли.
+smtp:
+  host: "smtp.example.com"
+  port: 465
+  user: "user@example.com"
+  password: "secret"
+
