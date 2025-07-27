@@ -169,6 +169,15 @@ def process_all(df, start_num, config, upload_folder):
     df['Код услуга'] = df['Код услуга'].fillna('')
     df['Сер. №'] = df['Сер. №'].astype(str).str.strip()
 
+    def to_int_str(val):
+        try:
+            return str(int(float(val)))
+        except (TypeError, ValueError):
+            return '0'
+
+    partner_id = to_int_str(config.get('partner_id', 0))
+    object_id = to_int_str(config.get('object', {}).get('id', 0))
+
     SERIAL_PREFIX_PRODUCER = {
         "DY": "Daisy",
         "DT": "Datecs",
@@ -219,6 +228,8 @@ def process_all(df, start_num, config, upload_folder):
             count = prod_df['Брой'].apply(pd.to_numeric, errors='coerce').sum()
             price_col = prod_df['Цена/бр.'].apply(pd.to_numeric, errors='coerce').dropna()
             price = float(price_col.iloc[0]) if not price_col.empty else 0.0
+            code_series = prod_df['Код услуга'].apply(pd.to_numeric, errors='coerce').dropna()
+            service_code = int(code_series.iloc[0]) if not code_series.empty else 0
             desc = DEFAULT_SERVICE_DESCR.get(prod, f"Актуализация на ФУ на {prod}")
             # Не взимай desc от prod_df['Описание услуга']
             items.append({
@@ -226,7 +237,7 @@ def process_all(df, start_num, config, upload_folder):
                 "qty": int(count),
                 "price": f"{price:.2f}",
                 "total": f"{count * price:.2f}",
-                "code": "",
+                "code": service_code,
                 "producer": prod
             })
             serials += [str(s) for s in prod_df['Сер. №']]
@@ -318,11 +329,12 @@ def process_all(df, start_num, config, upload_folder):
                 "desc": item['desc'],
                 "qty": item['qty'],
                 "price": item['price'],
-                "code": item['code'],
+                "code": to_int_str(item.get('code', 0)),
                 "producer": item['producer'],
                 "date": today,
                 "object_name": config.get('object', {}).get('name', 'Основен склад'),
-                "object_id": str(config.get('object', {}).get('id', ''))
+                "object_id": object_id,
+                "partner_id": partner_id
             }
             transfer_ops.append(op)
 
