@@ -175,10 +175,21 @@ def generate_transfer_log(ops_list, output_path):
     ET.SubElement(pt4, 'paymentTypes_Name').text = 'Наложен платеж'
     ET.SubElement(pt4, 'paymentTypes_PaymentMethod').text = '4'
 
+    pt5 = ET.SubElement(root, 'PaymentTypes')
+    ET.SubElement(pt5, 'paymentTypes_ID').text = '102'
+    ET.SubElement(pt5, 'paymentTypes_Name').text = 'ePay.bg'
+    ET.SubElement(pt5, 'paymentTypes_PaymentMethod').text = '2'
+
+    pt6 = ET.SubElement(root, 'PaymentTypes')
+    ET.SubElement(pt6, 'paymentTypes_ID').text = '103'
+    ET.SubElement(pt6, 'paymentTypes_Name').text = 'Плащане в брой (ЛЗН)'
+    ET.SubElement(pt6, 'paymentTypes_PaymentMethod').text = '1'
+
     # Кратко описание
     desc = ET.SubElement(root, 'Description')
-    ET.SubElement(desc, 'OperationRange').text = f"Проформи ОтДокумент № {ops_list[0]['invoice_no']} до {ops_list[-1]['invoice_no']}"
-    ET.SubElement(desc, 'UserName').text = "Стефан"  # <-- нов ред!
+    range_text = f"Проформи ОтДокумент № {ops_list[0]['invoice_no']} до {ops_list[-1]['invoice_no']}"
+    ET.SubElement(desc, 'OperationRange').text = range_text
+    ET.SubElement(desc, 'UserName').text = "Стефан"
     ET.SubElement(desc, 'ExportDate').text = datetime.now().strftime("%d.%m.%Y")
     ET.SubElement(desc, 'ExportTime').text = datetime.now().strftime("%H:%M")
     tree = ET.ElementTree(root)
