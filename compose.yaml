@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  flaskapp:
+    build: .
+    container_name: flaskapp
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    # Ако искаш винаги да инсталира dependencies при старт (не е нужно, ако build-ваш всеки път!):
+    # command: bash -c "pip install --upgrade pip && pip install -r requirements.txt && python app.py"
+    # Но по-добре е само:
+    command: python app.py
+
