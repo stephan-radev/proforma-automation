@@ -1,16 +1,18 @@
 import os
+import copy
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 from pdf2image import convert_from_path
 import xml.etree.ElementTree as ET
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import smtplib
 import ssl
 from email.message import EmailMessage
 
 # Път до шаблоните
 TEMPLATES_DIR = "templates"
+SCHEMA_FILE = "microinvest_schema.xml"
 
 def generate_invoice_pdf(invoice_data, output_path):
     """
@@ -29,6 +31,18 @@ def pdf_to_png(pdf_path, png_path):
     if images:
         images[0].save(png_path, "PNG")
 
+def _indent(elem, level=0):
+    i = "\n" + level * "  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        for e in elem:
+            _indent(e, level + 1)
+        if not e.tail or not e.tail.strip():
+            e.tail = i
+    if level and (not elem.tail or not elem.tail.strip()):
+        elem.tail = i
+
 def generate_transfer_log(ops_list, output_path, config):
     """Създава transfer.log (XML) със списък от операции."""
 
@@ -41,13 +55,27 @@ def generate_transfer_log(ops_list, output_path, config):
     user_group_id = str(user_cfg.get('group_id', 2))
     user_level = str(user_cfg.get('user_level', 3))
 
+    schema_tree = ET.parse(SCHEMA_FILE)
+    schema_root = schema_tree.getroot()
+    schema_elem = schema_root.find('{http://www.w3.org/2001/XMLSchema}schema')
+
     root = ET.Element('Microinvest')
+    if schema_elem is not None:
+        root.append(copy.deepcopy(schema_elem))
+
+    tz = timezone(timedelta(hours=3))
+    now = datetime.now(tz)
 
     for idx, op in enumerate(ops_list, start=1):
         oper = ET.SubElement(root, 'OperationsRelated')
 
         def add(tag, value=""):
-            ET.SubElement(oper, tag).text = str(value)
+            elem = ET.SubElement(oper, tag)
+            if value == "":
+                elem.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+                elem.text = " "
+            else:
+                elem.text = str(value)
 
         add('operations_ID', f"{op['invoice_no']}{idx}")
         add('operations_OperType', "14")
@@ -65,13 +93,13 @@ def generate_transfer_log(ops_list, output_path, config):
         add('operations_VATOut', vat_out)
         add('operations_Discount', "0")
         add('operations_CurrencyID', "1")
-        add('operations_Date', datetime.now().isoformat())
+        add('operations_Date', now.strftime('%Y-%m-%dT%H:%M:%S+03:00'))
         add('operations_Lot', " ")
         add('operations_LotID', "1")
         add('operations_Note', " ")
         add('operations_SrcDocID', "0")
         add('operations_UserID', user_id)
-        add('operations_UserRealTime', datetime.now().isoformat())
+        add('operations_UserRealTime', now.strftime('%Y-%m-%dT%H:%M:%S+03:00'))
 
         add('lots_ID', "1")
         add('lots_SerialNo', "")
@@ -144,7 +172,7 @@ def generate_transfer_log(ops_list, output_path, config):
         add('partners_IsVeryUsed', "0")
         add('partners_UserID', user_code)
         add('partners_GroupID', "301")
-        add('partners_UserRealTime', datetime.now().isoformat())
+        add('partners_UserRealTime', now.strftime('%Y-%m-%dT%H:%M:%S+03:00'))
         add('partners_Deleted', "0")
 
         add('users_ID', user_id)
@@ -181,11 +209,14 @@ def generate_transfer_log(ops_list, output_path, config):
         f"Проформи ОтДокумент № {ops_list[0]['invoice_no']} до {ops_list[-1]['invoice_no']}"
     )
     ET.SubElement(desc, 'UserName').text = user_name
-    ET.SubElement(desc, 'ExportDate').text = datetime.now().strftime("%d.%m.%Y")
-    ET.SubElement(desc, 'ExportTime').text = datetime.now().strftime("%H:%M")
+    ET.SubElement(desc, 'ExportDate').text = f"{now.day}.{now.month}.{now.year} \u0433."
+    ET.SubElement(desc, 'ExportTime').text = f"{now.hour}:{now.strftime('%M')}"
 
-    tree = ET.ElementTree(root)
-    tree.write(output_path, encoding="utf-8", xml_declaration=True)
+    _indent(root)
+    xml_bytes = ET.tostring(root, encoding='utf-8')
+    with open(output_path, 'wb') as f:
+        f.write(b'<?xml version="1.0" standalone="yes"?>\n')
+        f.write(xml_bytes)
 
 def add_invoice_info_to_table(df, invoice_no_map):
     """

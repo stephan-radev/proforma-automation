@@ -57,7 +57,7 @@ smtp:
   user: "user@example.com"
   password: "secret"
 
-microinvest_user:
+microinvest_user: # попълнете с реалните потребителски данни
   id: 2
   code: 1
   name: "Име"

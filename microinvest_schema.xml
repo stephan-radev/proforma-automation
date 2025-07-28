@@ -1,0 +1,517 @@
+<?xml version="1.0" standalone="yes"?>
+<Microinvest>
+  <xs:schema id="Microinvest" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Microinvest" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="OperationsRelated">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="operations_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="operations_OperType" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_Acct" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_GoodID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_PartnerID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_ObjectID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_OperatorID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_Qtty" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_Sign" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_PriceIn" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_PriceOut" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_VATIn" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_VATOut" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_Discount" type="xs:double" minOccurs="0" />
+                <xs:element name="operations_CurrencyID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_Date" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="operations_Lot" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="operations_LotID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_Note" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="operations_SrcDocID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_UserID" type="xs:int" minOccurs="0" />
+                <xs:element name="operations_UserRealTime" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="lots_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="lots_SerialNo" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="lots_Location" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="lots_ProductionDate" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="lots_EndDate" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="goods_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="goods_Code" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_BarCode1" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_BarCode2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_BarCode3" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Catalog1" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Catalog2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Catalog3" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Name2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Measure1" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Measure2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Ratio" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceIn" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut1" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut2" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut3" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut4" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut5" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut6" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut7" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut8" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut9" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_PriceOut10" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_MinQtty" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_NormalQtty" type="xs:double" minOccurs="0" />
+                <xs:element name="goods_Description" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="goods_Type" type="xs:int" minOccurs="0" />
+                <xs:element name="goods_IsRecipe" type="xs:int" minOccurs="0" />
+                <xs:element name="goods_TaxGroup" type="xs:int" minOccurs="0" />
+                <xs:element name="goods_IsVeryUsed" type="xs:int" minOccurs="0" />
+                <xs:element name="goods_GroupID" type="xs:int" minOccurs="0" />
+                <xs:element name="goods_Deleted" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="objects_Code" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="objects_Name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="objects_Name2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="objects_IsVeryUsed" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_GroupID" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_PriceGroup" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_Deleted" type="xs:int" minOccurs="0" />
+                <xs:element name="partners_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="partners_Code" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Company" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Company2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_MOL" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_MOL2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_City" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_City2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Address" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Address2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Phone" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Phone2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Fax" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_eMail" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_TaxNo" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_Bulstat" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Partners_BankName" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_BankCode" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_BankAcct" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_BankVATName" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_BankVATCode" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_BankVATAcct" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="partners_PriceGroup" type="xs:int" minOccurs="0" />
+                <xs:element name="partners_Discount" type="xs:double" minOccurs="0" />
+                <xs:element name="partners_Type" type="xs:short" minOccurs="0" />
+                <xs:element name="partners_IsVeryUsed" type="xs:short" minOccurs="0" />
+                <xs:element name="partners_UserID" type="xs:int" minOccurs="0" />
+                <xs:element name="partners_GroupID" type="xs:int" minOccurs="0" />
+                <xs:element name="partners_UserRealTime" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="partners_Deleted" type="xs:int" minOccurs="0" />
+                <xs:element name="users_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="users_Code" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="users_Name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="users_Name2" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="users_IsVeryUsed" type="xs:int" minOccurs="0" />
+                <xs:element name="users_GroupID" type="xs:int" minOccurs="0" />
+                <xs:element name="users_Password" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="users_UserLevel" type="xs:int" minOccurs="0" />
+                <xs:element name="users_Deleted" type="xs:int" minOccurs="0" />
+                <xs:element name="currencies_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="currencies_Currency" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="3" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="currencies_Description" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="currencies_ExchangeRate" type="xs:double" minOccurs="0" />
+                <xs:element name="currencies_Deleted" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="CashBook">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="cashbook_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="cashbook_Date" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="cashbook_Desc" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="cashbook_OperType" type="xs:int" minOccurs="0" />
+                <xs:element name="cashbook_Sign" type="xs:int" minOccurs="0" />
+                <xs:element name="cashbook_Profit" type="xs:double" minOccurs="0" />
+                <xs:element name="cashbook_UserID" type="xs:int" minOccurs="0" />
+                <xs:element name="cashbook_ObjectID" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="objects_Code" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="objects_Name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="objects_IsVeryUsed" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_GroupID" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_PriceGroup" type="xs:int" minOccurs="0" />
+                <xs:element name="objects_Deleted" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Payments">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="payments_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="payments_Acct" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_OperType" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_PartnerID" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_Qtty" type="xs:double" minOccurs="0" />
+                <xs:element name="payments_Mode" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_Date" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="payments_UserID" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_UserRealTime" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="payments_Type" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_ObjectID" type="xs:int" minOccurs="0" />
+                <xs:element name="payments_TransactionNumber" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="payments_EndDate" type="xs:dateTime" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="PaymentTypes">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="paymentTypes_ID" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+                <xs:element name="paymentTypes_Name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:maxLength value="255" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="paymentTypes_PaymentMethod" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Description">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="OperationRange" type="xs:string" minOccurs="0" />
+                <xs:element name="UserName" type="xs:string" minOccurs="0" />
+                <xs:element name="ExportDate" type="xs:string" minOccurs="0" />
+                <xs:element name="ExportTime" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+      <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//OperationsRelated" />
+        <xs:field xpath="operations_ID" />
+        <xs:field xpath="lots_ID" />
+        <xs:field xpath="goods_ID" />
+        <xs:field xpath="objects_ID" />
+        <xs:field xpath="partners_ID" />
+        <xs:field xpath="users_ID" />
+        <xs:field xpath="currencies_ID" />
+      </xs:unique>
+      <xs:unique name="CashBook_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//CashBook" />
+        <xs:field xpath="cashbook_ID" />
+        <xs:field xpath="objects_ID" />
+      </xs:unique>
+      <xs:unique name="Payments_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//Payments" />
+        <xs:field xpath="payments_ID" />
+      </xs:unique>
+      <xs:unique name="PaymentTypes_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//PaymentTypes" />
+        <xs:field xpath="paymentTypes_ID" />
+      </xs:unique>
+    </xs:element>
+  </xs:schema>
+</Microinvest>
