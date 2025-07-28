@@ -17,6 +17,7 @@ RUN apt-get update && \
         python3-cffi \
         fonts-liberation \
         fonts-dejavu-core \
+        poppler-utils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
