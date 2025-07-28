@@ -396,5 +396,9 @@ def send_emails():
     return redirect(url_for('log'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    flask_cfg = config.get("flask", {}) if isinstance(config, dict) else {}
+    host = flask_cfg.get("host", "0.0.0.0")
+    port = int(flask_cfg.get("port", 5000))
+    print(f"Starting Flask server on {host}:{port}")
+    app.run(host=host, port=port, debug=True)
 
