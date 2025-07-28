@@ -43,6 +43,47 @@ def _indent(elem, level=0):
     if level and (not elem.tail or not elem.tail.strip()):
         elem.tail = i
 
+def _get_numeric_fields(schema_file):
+    """Връща множеството от полета с числов тип от XML схемата."""
+    numeric_types = {
+        'xs:int',
+        'xs:short',
+        'xs:double',
+        'xs:decimal',
+        'xs:unsignedByte',
+        'xs:unsignedShort',
+        'xs:unsignedInt',
+    }
+
+    fields = set()
+    tree = ET.parse(schema_file)
+    root = tree.getroot()
+    schema = root.find('{http://www.w3.org/2001/XMLSchema}schema')
+    if schema is None:
+        return fields
+
+    for elem in schema.iter('{http://www.w3.org/2001/XMLSchema}element'):
+        name = elem.get('name')
+        if not name:
+            continue
+        etype = elem.get('type')
+        if etype:
+            if etype in numeric_types or etype.split(':')[-1] in {
+                'int', 'short', 'double', 'decimal', 'unsignedByte',
+                'unsignedShort', 'unsignedInt'
+            }:
+                fields.add(name)
+                continue
+        restriction = elem.find('.//{http://www.w3.org/2001/XMLSchema}restriction')
+        if restriction is not None:
+            base = restriction.get('base')
+            if base in numeric_types or base.split(':')[-1] in {
+                'int', 'short', 'double', 'decimal', 'unsignedByte',
+                'unsignedShort', 'unsignedInt'
+            }:
+                fields.add(name)
+    return fields
+
 def generate_transfer_log(ops_list, output_path, config):
     """Създава transfer.log (XML) със списък от операции."""
 
@@ -58,6 +99,7 @@ def generate_transfer_log(ops_list, output_path, config):
     schema_tree = ET.parse(SCHEMA_FILE)
     schema_root = schema_tree.getroot()
     schema_elem = schema_root.find('{http://www.w3.org/2001/XMLSchema}schema')
+    numeric_fields = _get_numeric_fields(SCHEMA_FILE)
 
     root = ET.Element('Microinvest')
     if schema_elem is not None:
@@ -69,13 +111,39 @@ def generate_transfer_log(ops_list, output_path, config):
     for idx, op in enumerate(ops_list, start=1):
         oper = ET.SubElement(root, 'OperationsRelated')
 
-        def add(tag, value=""):
-            elem = ET.SubElement(oper, tag)
-            if value == "":
+        def add(tag, value="", parent=oper):
+            # Пропускай числови полета без стойност
+            if value is None or (isinstance(value, str) and value.strip() == ""):
+                if tag in numeric_fields:
+                    return
+                elem = ET.SubElement(parent, tag)
                 elem.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
                 elem.text = " "
-            else:
-                elem.text = str(value)
+                return elem
+
+            if tag in numeric_fields:
+                # Преобразувай към валиден числов формат
+                try:
+                    val = float(str(value).strip())
+                    text = f"{val:.2f}" if not val.is_integer() else str(int(val))
+                    text = text.rstrip('0').rstrip('.') if '.' in text else text
+                except Exception:
+                    cleaned = ''.join(c for c in str(value) if c.isdigit() or c in '.-')
+                    if not cleaned or cleaned in {'-', '.', '-.'}:
+                        return
+                    try:
+                        val = float(cleaned)
+                        text = f"{val:.2f}" if not val.is_integer() else str(int(val))
+                        text = text.rstrip('0').rstrip('.') if '.' in text else text
+                    except Exception:
+                        return
+                elem = ET.SubElement(parent, tag)
+                elem.text = text
+                return elem
+
+            elem = ET.SubElement(parent, tag)
+            elem.text = str(value)
+            return elem
 
         add('operations_ID', f"{op['invoice_no']}{idx}")
         add('operations_OperType', "14")
@@ -200,9 +268,9 @@ def generate_transfer_log(ops_list, output_path, config):
         ('103', 'Плащане в брой (ЛЗН)', '1'),
     ]:
         pt = ET.SubElement(root, 'PaymentTypes')
-        ET.SubElement(pt, 'paymentTypes_ID').text = pt_id
-        ET.SubElement(pt, 'paymentTypes_Name').text = pt_name
-        ET.SubElement(pt, 'paymentTypes_PaymentMethod').text = pt_method
+        add('paymentTypes_ID', pt_id, parent=pt)
+        add('paymentTypes_Name', pt_name, parent=pt)
+        add('paymentTypes_PaymentMethod', pt_method, parent=pt)
 
     desc = ET.SubElement(root, 'Description')
     ET.SubElement(desc, 'OperationRange').text = (
