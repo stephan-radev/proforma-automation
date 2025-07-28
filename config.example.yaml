@@ -1,0 +1,69 @@
+invoice:
+  default_start_number: 1001
+  bank: "ИМЕ НА БАНКА"
+  iban: "BG00 XXXX YYYY ZZZZ AAAA BB"
+  bic: "BANKBGSF"
+  firm_name: "Ваша Фирма"
+  firm_eik: "000000000"
+  firm_address: "Град, адрес..."
+  firm_mol: "Вашето име"
+
+object:
+  id: 1
+  name: "Основен склад"
+
+# ID на партньора (при липса използвай 0)
+partner_id: 0
+
+instructions:
+  default: "Примерна инструкция за плащане..."
+  Daisy: "Указание за устройства Daisy..."
+  Datecs: "Указание за Datecs..."
+  Tremol: "Указание за Tremol..."
+
+email:
+  subject_template: "Документ Проформа: {invoice_no} от {firm_name}"
+  template: |
+    Здравейте,
+
+    Прилагам проформа фактура за актуализация.
+
+    Проформата е за устройства със серийни номера:
+    ({serials})
+
+    Ако някое от тях не се използва, моля, сигнализирайте преди плащане!
+
+    Получател: {firm}
+    IBAN: {iban}
+    Сума с ДДС: {total:.2f} лв.
+    Основание: Проформа № {invoice_no}
+    Дата: {date}
+
+    Поздрави,
+    Вашето име
+
+viber:
+  template: |
+    Проформа за актуализация на касови апарати.
+    Клиент: {client}
+    Устройства: ({serials})
+    Сума с ДДС: {total:.2f} лв.
+    Основание: Проформа № {invoice_no}
+
+# Настройки за SMTP сървъра, използван при изпращане на имейли.
+smtp:
+  host: "smtp.example.com"
+  port: 465
+  user: "user@example.com"
+  password: "secret"
+
+microinvest_user:
+  id: 2
+  code: 1
+  name: "Име"
+  full_name: "Име Фамилия"
+  password: "password_hash_or_example"
+  group_id: 2
+  user_level: 3
+
+
