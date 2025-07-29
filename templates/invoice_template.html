@@ -7,12 +7,22 @@
         body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 13px; }
         .header { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
         .info-table, .items-table { width: 100%; border-collapse: collapse; }
-        .info-table td { padding: 2px 6px; }
-        .items-table th, .items-table td { border: 1px solid #444; padding: 6px; text-align: left; }
+        .info-table td { padding: 2px 6px; vertical-align: top; }
+        .items-table th, .items-table td { border: 1px solid #444; padding: 6px; }
         .items-table th { background: #eee; }
-        .right { text-align: right; }
+        .items-table th, .items-table td { text-align: left; } /* По подразбиране – ляво */
         .section-title { font-weight: bold; margin-top: 12px; }
-        .totals { font-weight: bold; text-align: right; }
+
+        /* Най-отдолу, най-специфично – преборва всички конфликти */
+        .items-table th.right,
+        .items-table td.right {
+            text-align: right !important;
+        }
+        .totals {
+            font-weight: bold;
+            text-align: right !important;
+        }
+
         .footer { margin-top: 18px; font-size: 12px; }
     </style>
 </head>
@@ -77,7 +87,7 @@
         Плащане по сметка: {{ iban }} | {{ bank }}<br>
         Основание: Проформа № {{ invoice_no }}<br>
         <br>
-        Програмен продукт Microinvest Склад Pro
+        Програмен продукт Автоматизация за проформи от Стеди
     </div>
 </body>
 </html>

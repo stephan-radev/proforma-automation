@@ -378,7 +378,7 @@ def send_emails():
             send_email_smtp(
                 to_addr=email,
                 subject=config['email']['subject_template'].format(invoice_no=r["invoice_no"], firm_name=config['invoice']['firm_name']),
-                body=r["email_text"] + "\n\n--\nАко сте получили това писмо по погрешка или вече сте реагирали, извинете ни — задължени сме по законодателство да информираме всички клиенти.",
+                body=r["email_text"] + "\n\n--\nАко сте получили това писмо по погрешка или вече сте реагирали, извинете ни за причиненото неудобство — твърде краткият срок и многото неразбории не ни позволяват да проявим присъщата ни точност, на обичайното ниво, а сме длъжни да информираме всички клиенти.",
                 attachment_path=attachment_path,
                 config=config
             )

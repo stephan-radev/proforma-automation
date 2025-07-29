@@ -2,7 +2,7 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <title>Генерирани проформа фактури – лог</title>
+    <title>Генерирани проформа фактури – дневник</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f6f6fa; margin: 0; padding: 0; }
         .container { max-width: 960px; margin: 36px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #aaa; padding: 24px; }
@@ -36,7 +36,7 @@
 </form>
 <body>
     <div class="container">
-        <h2>Генерирани проформа фактури и лог</h2>
+        <h2>Генерирани проформа фактури и дневник</h2>
         <div class="bottom-links">
             {% if transfer_log_path %}
                 <a class="file-link" href="{{ url_for('download', filename=transfer_log_path) }}">Свали transfer.log</a>
@@ -103,7 +103,7 @@
         </table>
         {% endif %}
         <div class="bottom-links">
-            <a class="file-link" href="{{ url_for('index') }}">⬅︎ Ново качване / нова генерация</a>
+            <a class="file-link" href="{{ url_for('index') }}">⬅︎ Ново качване / ново генериране</a>
         </div>
     </div>
 </body>
